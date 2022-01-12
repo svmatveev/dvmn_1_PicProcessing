@@ -4,9 +4,9 @@ def print_attributes(image: Image):
     width = image.width
     height = image.height
     format = image.mode
-    name = image.filename
+    #ame = image.filename
  
-    print(f"Наименование — {name}\nШирина — {width}\nВысота — {height}\nЦветовая модель — {format}");
+    print(f"Ширина — {width}\nВысота — {height}\nЦветовая модель — {format}");
 
 def image_crop(image: Image,
                 offset_width_l: int,
@@ -30,6 +30,22 @@ if __name__ == "__main__":
     image_merged = Image.merge("RGB", (image_red_ch, image_green_ch, image_blue_ch))
     image_merged.save("image_merged.jpg")
     
-    image_croped = image_crop(image_rgb, 50, 0, 0, 0)
-    image_croped.save("image_croped.jpg")
+    offset = 10
+    image_croped_red = image_crop(image_red_ch, offset*2, 0, 0, 0)
+    # image_red_ch = Image.blend(image_red_ch, image_croped_red, .5)
+    # image_red_ch.save("image_red_ch.jpg")
+
+    image_croped_blue = image_crop(image_blue_ch, 0, 0, offset*2, 0)
+    # image_blue_ch = Image.blend(image_blue_ch, image_croped_blue, .5)
+    # image_red_ch.save("image_blue_ch.jpg")
+
+    image_croped_green = image_crop(image_green_ch, offset, 0, offset, 0)
+    # image_blue_ch = Image.blend(image_blue_ch, image_croped_blue, .5)
+    # image_red_ch.save("image_blue_ch.jpg")
+
+    print_attributes(image_croped_red)
+    print_attributes(image_croped_blue)
+    print_attributes(image_croped_green)
     
+    new_image = Image.merge("RGB", (image_croped_red, image_croped_green, image_croped_blue))
+    new_image.save("shifted_monro.jpg")
