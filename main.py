@@ -1,4 +1,13 @@
 from PIL import Image
+import argparse
+import os
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Image processing parameters')
+    parser.add_argument('path', type=str, help='Path to image')
+    parser.add_argument('--resolution', type=int, default=80, help='Thumbnail resolution')
+    args = parser.parse_args()
+    return args
 
 def print_attributes(image: Image):
     width = image.width
@@ -27,14 +36,19 @@ def shift_image_layer(rgb_image: Image,
     img = Image.merge("RGB", (image_croped_red, image_croped_green, image_croped_blue))
     return img
 
-
 if __name__ == "__main__":
-    image = Image.open("monro.jpg")
+
+    args = parse_arguments()
+    file_path = args.path
+
+    abs_path = os.path.abspath(file_path)
+    dir_abs_name = os.path.dirname(abs_path)
+    file_name = os.path.basename(abs_path)
+
+    image = Image.open(abs_path)
     image_rgb = image.convert("RGB")
-
     new_image_full = shift_image_layer(image_rgb, 10)
-    new_image_full.save("edited_image.jpg")
+    new_image_full.save(dir_abs_name + "/" + file_name + "_edited.jpg", "JPEG")
 
-    new_image_full.thumbnail((80,80))
-    new_image_full.save("edited_image_thumbnail.jpg")
-    
+    new_image_full.thumbnail((args.resolution, args.resolution))
+    new_image_full.save(dir_abs_name + "/" + file_name + f"_edited_thumbnail_{args.resolution}.jpg", "JPEG")
