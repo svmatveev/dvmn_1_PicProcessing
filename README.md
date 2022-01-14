@@ -2,7 +2,7 @@
 ---
 [Devman](https://dvmn.org/modules/meeting-python/lesson/avatar-cropping) Python introduction task 4 implementation.
 
-This script shifts RGB channels of picture processed and creates thumbnail file for that
+This script shifts provided picture`s RGB channels and creates thumbnail file for that
 
 **Prerequisites**
 ---
