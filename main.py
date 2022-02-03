@@ -16,7 +16,7 @@ def parse_arguments():
                         default=10,
                         help='Thumbnail resolution 0 <= precision <= 100.\
                               Restricted with that range if other values \
-                              specified')                    
+                              specified')
     args = parser.parse_args()
     return args
 
