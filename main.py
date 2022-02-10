@@ -23,30 +23,12 @@ def parse_arguments():
 
 def crop_image(image: Image,
                left_width_offset: int,
-               left_height_offset: int,
-               right_width_offset: int,
-               right_height_offset: int) -> Image:
+               right_width_offset: int) -> Image:
     cropped_image = image.crop((left_width_offset,
-                                left_height_offset,
+                                0,
                                 image.width - right_width_offset,
-                                image.height - right_height_offset))
+                                image.height))
     return cropped_image
-
-
-def shift_image_layers(rgb_image: Image,
-                       offset: int) -> Image:
-    red_image_ch, green_image_ch, blue_image_ch = rgb_image.split()
-    red_croped_image = Image.blend(crop_image(red_image_ch, offset * 2, 0, 0, 0),
-                                   crop_image(red_image_ch, offset, 0, offset, 0),
-                                   .5)
-    blue_croped_image = Image.blend(crop_image(blue_image_ch, 0, 0, offset * 2, 0),
-                                    crop_image(blue_image_ch, offset, 0, offset, 0),
-                                    .5)
-    green_croped_image = crop_image(green_image_ch, offset, 0, offset, 0)
-    img = Image.merge("RGB", (red_croped_image,
-                              green_croped_image,
-                              blue_croped_image))
-    return img
 
 
 def main():
@@ -65,9 +47,20 @@ def main():
         precision = 100
     elif precision <= 0:
         precision = 0
-    shift_power = int(image.width / 100 * precision)
+    offset = int(image.width / 100 * precision)
 
-    image = shift_image_layers(image, shift_power)
+    red_image_ch, green_image_ch, blue_image_ch = image.split()
+    red_cropped_image = Image.blend(crop_image(red_image_ch, offset * 2, 0),
+                                   crop_image(red_image_ch, offset, offset),
+                                   .5)
+    blue_cropped_image = Image.blend(crop_image(blue_image_ch, 0, offset * 2),
+                                    crop_image(blue_image_ch, offset, offset),
+                                    .5)
+    green_cropped_image = crop_image(green_image_ch, offset, offset)
+    image = Image.merge("RGB", (red_cropped_image,
+                                green_cropped_image,
+                                blue_cropped_image))
+
     image.save(str(Path(dir_abs_name, file_name + "_edited.jpg")), "JPEG")
     image.thumbnail((args.resolution, args.resolution))
     image.save(str(Path(dir_abs_name,
